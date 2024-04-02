@@ -1,42 +1,27 @@
 #!/usr/bin/env python3
-"""index_range that takes two integer arguments 'page' and 
-'page_size'.
+'''Description: Implementing a method named get_page that takes two integer
+                arguments page with default value 1 and page_size with
+                default value 10.
+'''
 
-Function returns a tuple of size two containing a start and
-an end indices corresponding to the range of indexes to
-return in a list for those particular pagination parameters.
-
-Page numbers are 1-idexed.
-"""
-
-
-from typing import Tuple, List
 import csv
 import math
+from typing import List
 
-
-def index_range(page: int, page_size: int) -> Tuple[int, int]:
-    """
-    start and end indices corresponding to the range
-    """
-    # start at 0 and end at page_size if page is 1
-    # start at ((page-1) * page_size) and end at
-    # (page_size * page) if page is 2.
-    # start at ((page-1) * page_size) and end at 
-    # (page_size * page) if page is 3
-    return ((page-1) * page_size, page_size * page)
+index_range = __import__('0-simple_helper_function').index_range
 
 
 class Server:
-    """Server class which paginates a database of popular baby names.
+    """Server class to paginate a database of popular baby names.
     """
     DATA_FILE = "Popular_Baby_Names.csv"
 
     def __init__(self):
+        ''' Initialize instance. '''
         self.__dataset = None
 
     def dataset(self) -> List[List]:
-        """Function represents cached dataset
+        """Cached dataset
         """
         if self.__dataset is None:
             with open(self.DATA_FILE) as f:
@@ -47,16 +32,15 @@ class Server:
         return self.__dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
-        """Function returns the appropriate page from the dataset"""
-        assert type(page) is int and page > 0
-        assert type(page_size) is int and page_size > 0
+        ''' Output page of dataset. '''
+        assert isinstance(page, int) and isinstance(page_size, int)
+        assert page > 0 and page_size > 0
 
-        # get the data from the csv
-        data = self.dataset()
+        indices = index_range(page, page_size)
+        start = indices[0]
+        end = indices[1]
 
         try:
-            # get the index to start and end at
-            start, end = index_range(page, page_size)
-            return data[start:end]
+            return self.dataset()[start:end]
         except IndexError:
             return []
